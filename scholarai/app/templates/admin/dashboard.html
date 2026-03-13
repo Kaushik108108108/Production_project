@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ScholarAI — Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+</head>
+<body data-role="admin">
+{% include 'shared/nav_admin.html' with context %}
+{% set active = 'dashboard' %}
+
+<div class="page">
+  {% if stats.high > 0 %}
+  <div class="alert danger">
+    <span class="alert__icon">⚠</span>
+    <div class="alert__text"><strong>{{ stats.high }} students flagged as HIGH RISK</strong> — Immediate intervention recommended.</div>
+    <div class="alert__action"><button class="btn btn-danger sm">VIEW ALL →</button></div>
+  </div>
+  {% endif %}
+
+  <!-- STAT RECTANGLES -->
+  <div class="stat-row cols-4">
+    <div class="stat-rect blue">
+      <span class="stat-rect__icon">👥</span>
+      <div class="stat-rect__label">Total Students</div>
+      <div class="stat-rect__value">{{ stats.total }}</div>
+      <div class="stat-rect__sub">Enrolled this academic year</div>
+    </div>
+    <div class="stat-rect red">
+      <span class="stat-rect__icon">⚠</span>
+      <div class="stat-rect__label">High Risk</div>
+      <div class="stat-rect__value">{{ stats.high }}</div>
+      <div class="stat-rect__sub">Require immediate attention</div>
+    </div>
+    <div class="stat-rect amber">
+      <span class="stat-rect__icon">📊</span>
+      <div class="stat-rect__label">Medium Risk</div>
+      <div class="stat-rect__value">{{ stats.medium }}</div>
+      <div class="stat-rect__sub">Under active monitoring</div>
+    </div>
+    <div class="stat-rect green">
+      <span class="stat-rect__icon">📈</span>
+      <div class="stat-rect__label">Performance Index</div>
+      <div class="stat-rect__value">{{ stats.avg_pi }}%</div>
+      <div class="stat-rect__sub">School-wide average</div>
+    </div>
+  </div>
+
+  <!-- STUDENT TABLE -->
+  <div class="card mb-0">
+    <div class="section-head">
+      <div class="section-head__left">
+        <div class="section-head__bar"></div>
+        <span class="section-head__title">Student Performance Overview</span>
+      </div>
+      <div class="section-head__actions">
+        <form method="GET" style="display:flex;gap:8px;align-items:center;">
+          <select name="cls" class="form-control" style="width:130px;padding:6px 10px;font-size:11px;">
+            <option value="">All Classes</option>
+            <option value="10" {% if cls_filter=='10' %}selected{% endif %}>Class 10</option>
+            <option value="11" {% if cls_filter=='11' %}selected{% endif %}>Class 11</option>
+          </select>
+          <select name="sec" class="form-control" style="width:110px;padding:6px 10px;font-size:11px;">
+            <option value="">All Sections</option>
+            <option value="A" {% if sec_filter=='A' %}selected{% endif %}>Section A</option>
+            <option value="B" {% if sec_filter=='B' %}selected{% endif %}>Section B</option>
+            <option value="C" {% if sec_filter=='C' %}selected{% endif %}>Section C</option>
+          </select>
+          <select name="risk" class="form-control" style="width:130px;padding:6px 10px;font-size:11px;">
+            <option value="">All Risk Levels</option>
+            <option value="high"   {% if risk_filter=='high'   %}selected{% endif %}>High Risk</option>
+            <option value="medium" {% if risk_filter=='medium' %}selected{% endif %}>Medium Risk</option>
+            <option value="low"    {% if risk_filter=='low'    %}selected{% endif %}>Low Risk</option>
+          </select>
+          <button type="submit" class="btn btn-primary sm">APPLY</button>
+        </form>
+        <button class="btn btn-danger sm" id="bulkEmailBtn">📧 BULK EMAIL HIGH RISK</button>
+      </div>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Student ID</th><th>Name</th><th>Class</th><th>Attendance</th>
+          <th>PI Score</th><th>Dues (₹)</th><th>Complaints</th><th>Risk Level</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in students %}
+        <tr {% if s.risk == 'high' %}class="high-risk"{% endif %}>
+          <td class="mono text-muted">{{ s.id }}</td>
+          <td><strong>{{ s.name }}</strong></td>
+          <td>{{ s.cls }} / {{ s.sec }}</td>
+          <td>
+            <span class="mono fw-700 {% if s.att < 75 %}text-red{% else %}text-green{% endif %}">{{ s.att }}%</span>
+          </td>
+          <td>
+            <div class="flex-center gap-8">
+              <div class="progress">
+                <div class="progress__fill {% if s.pi < 65 %}red{% elif s.pi < 80 %}amber{% else %}green{% endif %}" style="width:{{ s.pi }}%"></div>
+              </div>
+              <span class="mono fw-700 {% if s.pi < 65 %}text-red{% elif s.pi < 80 %}text-amber{% else %}text-green{% endif %}">{{ s.pi }}%</span>
+            </div>
+          </td>
+          <td>
+            <span class="mono fw-700 {% if s.dues > 0 %}text-red{% else %}text-muted{% endif %}">
+              {% if s.dues > 0 %}₹{{ "{:,}".format(s.dues) }}{% else %}₹0{% endif %}
+            </span>
+          </td>
+          <td>
+            <span class="mono {% if s.complaints > 1 %}text-red{% elif s.complaints == 1 %}text-amber{% else %}text-muted{% endif %}">{{ s.complaints }}</span>
+          </td>
+          <td><span class="risk {{ s.risk }}">{{ 'HIGH RISK' if s.risk=='high' else 'MEDIUM' if s.risk=='medium' else 'LOW RISK' }}</span></td>
+          <td>
+            <div class="flex gap-8">
+              <a href="{{ url_for('admin.student_details', student_id=s.id) }}"><button class="btn btn-outline sm">DETAILS</button></a>
+              <a href="{{ url_for('admin.send_email', student_id=s.id) }}"><button class="btn btn-primary sm">EMAIL</button></a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="table-footer">
+      <span class="mono fs-11 text-muted">Showing {{ students|length }} students</span>
+      <div class="pagination">
+        <button class="page-btn">←</button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">→</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

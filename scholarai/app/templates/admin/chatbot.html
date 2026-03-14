@@ -40,8 +40,8 @@
       </div>
       <div class="card mb-0">
         <div class="form-label mb-12">Chat History</div>
-        {% for h in chat_history %}
-        <div style="font-size:12px;color:var(--text-lt);padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer;">{{ h.label }}</div>
+        {% for h in chat_session %}
+        <div style="font-size:12px;color:var(--text-lt);padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer;">{{ h.session_label }}</div>
         {% endfor %}
       </div>
       <div class="card mb-0">

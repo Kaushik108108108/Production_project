@@ -11,11 +11,11 @@
   <div class="breadcrumb">
     <a href="{{ url_for('admin.dashboard') }}">DASHBOARD</a>
     <span class="breadcrumb__sep">›</span>
-    <a href="{{ url_for('admin.student_details', student_id=student.id) }}">{{ student.id }}</a>
+    <a href="{{ url_for('admin.student_details', student_id=student.student_id) }}">{{ student.student_id }}</a>
     <span class="breadcrumb__sep">›</span>
     <span class="breadcrumb__current">SEND EMAIL</span>
     <div class="breadcrumb__actions">
-      <a href="{{ url_for('admin.student_details', student_id=student.id) }}"><button class="btn btn-ghost sm">← BACK</button></a>
+      <a href="{{ url_for('admin.student_details', student_id=student.student_id) }}"><button class="btn btn-ghost sm">← BACK</button></a>
     </div>
   </div>
 
@@ -29,11 +29,11 @@
   {% endwith %}
 
   <div class="info-band mb-20">
-    <div class="info-band__item"><div class="info-band__label">Student</div><div class="info-band__value">{{ student.name }} ({{ student.id }})</div></div>
-    <div class="info-band__item"><div class="info-band__label">Risk Level</div><div class="info-band__value text-red">{{ student.risk|upper }} RISK</div></div>
-    <div class="info-band__item"><div class="info-band__label">PI Score</div><div class="info-band__value text-amber">{{ student.pi }}%</div></div>
-    <div class="info-band__item"><div class="info-band__label">Dues</div><div class="info-band__value {% if student.dues > 0 %}text-red{% else %}text-green{% endif %}">₹{{ "{:,}".format(student.dues) }}</div></div>
-    <div class="info-band__item"><div class="info-band__label">Attendance</div><div class="info-band__value {% if student.att < 75 %}text-red{% else %}text-green{% endif %}">{{ student.att }}%</div></div>
+    <div class="info-band__item"><div class="info-band__label">Student</div><div class="info-band__value">{{ student.full_name }} ({{ student.student_id }})</div></div>
+    <div class="info-band__item"><div class="info-band__label">Risk Level</div><div class="info-band__value text-red">{{ student.risk_level|upper }} RISK</div></div>
+    <div class="info-band__item"><div class="info-band__label">PI Score</div><div class="info-band__value text-amber">{{ student.performance_index }}%</div></div>
+    <div class="info-band__item"><div class="info-band__label">Dues</div><div class="info-band__value {% if student.due_amount > 0 %}text-red{% else %}text-green{% endif %}">₹{{ "{:,}".format(student.due_amount) }}</div></div>
+    <div class="info-band__item"><div class="info-band__label">Attendance</div><div class="info-band__value {% if student.attendance_rate < 75 %}text-red{% else %}text-green{% endif %}">{{ student.attendance_rate }}%</div></div>
   </div>
 
   <div class="card mb-0">
@@ -44,7 +44,7 @@
       <div class="grid grid-2">
         <div class="form-group">
           <label class="form-label">Recipient (Student)</label>
-          <input type="email" name="to_email" class="form-control" value="{{ student.id|lower }}@school.edu" readonly/>
+          <input type="email" name="to_email" class="form-control" value="{{ student.full_name.lower().replace(' ','.') }}@school.edu" readonly/>
         </div>
         <div class="form-group">
           <label class="form-label">CC — Guardian Email</label>
@@ -77,7 +77,7 @@
         <label class="flex-center gap-8" style="font-size:13px;cursor:pointer;"><input type="radio" name="priority" value="urgent"/> Urgent</label>
       </div>
       <div class="flex gap-8" style="justify-content:flex-end;padding-top:8px;border-top:1px solid var(--border);">
-        <a href="{{ url_for('admin.student_details', student_id=student.id) }}"><button type="button" class="btn btn-ghost">CANCEL</button></a>
+        <a href="{{ url_for('admin.student_details', student_id=student.student_id) }}"><button type="button" class="btn btn-ghost">CANCEL</button></a>
         <button type="button" class="btn btn-dark">SAVE AS DRAFT</button>
         <button type="submit" class="btn btn-primary" id="sendEmailBtn">SEND EMAIL →</button>
       </div>

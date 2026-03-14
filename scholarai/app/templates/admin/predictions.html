@@ -10,9 +10,9 @@
 <div class="page">
   <div class="stat-row cols-4">
     <div class="stat-rect blue"><div class="stat-rect__label">Total Predictions Run</div><div class="stat-rect__value">{{ predictions|length }}</div><div class="stat-rect__sub">This academic term</div></div>
-    <div class="stat-rect red"><div class="stat-rect__label">High Risk Detected</div><div class="stat-rect__value">{{ predictions|selectattr('risk','eq','high')|list|length }}</div><div class="stat-rect__sub">Flagged by AI model</div></div>
+    <div class="stat-rect red"><div class="stat-rect__label">High Risk Detected</div><div class="stat-rect__value">{{ predictions|selectattr('risk_level','eq','high')|list|length }}</div><div class="stat-rect__sub">Flagged by AI model</div></div>
     <div class="stat-rect amber"><div class="stat-rect__label">Model Accuracy</div><div class="stat-rect__value">87%</div><div class="stat-rect__sub">Validated on test set</div></div>
-    <div class="stat-rect green"><div class="stat-rect__label">Avg Confidence</div><div class="stat-rect__value">{{ (predictions|sum(attribute='confidence') / predictions|length)|round|int }}%</div><div class="stat-rect__sub">AI prediction confidence</div></div>
+    <div class="stat-rect green"><div class="stat-rect__label">Avg Confidence</div><div class="stat-rect__value">{{ (predictions|sum(attribute='confidence_score') / predictions|length)|round|int }}%</div><div class="stat-rect__sub">AI prediction confidence</div></div>
   </div>
   <div class="card mb-0">
     <div class="section-head">
@@ -20,19 +20,19 @@
       <div class="section-head__actions"><button class="btn btn-primary sm">+ RUN NEW PREDICTION</button><button class="btn btn-ghost sm">📄 EXPORT ALL</button></div>
     </div>
     <table class="data-table">
-      <thead><tr><th>Pred. ID</th><th>Student</th><th>Class</th><th>Subject</th><th>Predicted Score</th><th>Risk Level</th><th>Confidence</th><th>Run By</th><th>Date</th><th>Action</th></tr></thead>
+      <thead><tr><th>Prediction ID</th><th>Student</th><th>Class</th><th>Subject</th><th>Predicted Score</th><th>Risk Level</th><th>Confidence</th><th>Run By</th><th>Date</th><th>Action</th></tr></thead>
       <tbody>
         {% for p in predictions %}
-        <tr {% if p.risk=='high' %}class="high-risk"{% endif %}>
-          <td class="mono text-muted">{{ p.id }}</td>
-          <td><strong>{{ p.student }}</strong></td>
-          <td>{{ p.cls }}</td>
-          <td>{{ p.subject }}</td>
-          <td><span class="mono fw-800 {% if p.score<65 %}text-red{% elif p.score<80 %}text-amber{% else %}text-green{% endif %}">{{ p.score }}%</span></td>
-          <td><span class="risk {{ p.risk }}">{{ 'HIGH RISK' if p.risk=='high' else 'MEDIUM' if p.risk=='medium' else 'LOW RISK' }}</span></td>
-          <td class="mono">{{ p.confidence }}%</td>
-          <td class="text-muted">{{ p.by }}</td>
-          <td class="text-muted">{{ p.date }}</td>
+        <tr {% if p.risk_level=='high' %}class="high-risk"{% endif %}>
+          <td class="mono text-muted">{{ p.prediction_id }}</td>
+          <td><strong>{{ p.full_name }}</strong></td>
+          <td>{{ p.class_level }}</td>
+          <td>{{ p.subject_name }}</td>
+          <td><span class="mono fw-800 {% if p.predicted_score<65 %}text-red{% elif p.predicted_score<80 %}text-amber{% else %}text-green{% endif %}">{{ p.predicted_score }}%</span></td>
+          <td><span class="risk {{ p.risk_level }}">{{ 'HIGH RISK' if p.risk_level=='high' else 'MEDIUM' if p.risk_level=='medium' else 'LOW RISK' }}</span></td>
+          <td class="mono">{{ p.confidence_score }}%</td>
+          <td class="text-muted">{{ p.predicted_by }}</td>
+          <td class="text-muted">{{ p.created_at }}</td>
           <td><a href="{{ url_for('admin.student_details', student_id='STU-001') }}"><button class="btn btn-outline sm">VIEW</button></a></td>
         </tr>
         {% endfor %}

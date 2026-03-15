@@ -489,8 +489,8 @@ input, select, textarea, button { font-family: var(--font); }
 .login-panel-right.admin { background: var(--navy); }
 
 /* Student login */
-.login-panel-left.student  { background: linear-gradient(160deg, #0EA5E9 0%, #0B1120 70%); }
-.login-panel-right.student { background: var(--white); border-left: 4px solid var(--cyan); }
+.login-panel-left.student  { background: var(--navy); }
+.login-panel-right.student { background: var(--navy); border-left: 1px solid var(--navy-lt); }
 
 .login-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 48px; }
 .login-logo  {
@@ -514,19 +514,21 @@ input, select, textarea, button { font-family: var(--font); }
 .login-stat:last-child { border-right: none; }
 .login-stat__val { font-weight: 800; font-size: 22px; font-family: var(--mono); }
 .login-stat__val.admin   { color: var(--blue); }
-.login-stat__val.student { color: #7DD3FC; }
+.login-stat__val.student { color: var(--blue); }
 .login-stat__lbl { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
 
 .login-form-title { font-weight: 800; font-size: 22px; margin-bottom: 6px; }
 .login-form-title.admin  { color: var(--white); }
-.login-form-title.student { color: var(--text); }
+.login-form-title.student { color: var(--white); }
 .login-form-sub { font-size: 13px; margin-bottom: 32px; }
 .login-form-sub.admin   { color: var(--gray); }
-.login-form-sub.student { color: var(--text-lt); }
+.login-form-sub.student   { color: var(--gray); }
 .login-form { display: flex; flex-direction: column; gap: 18px; }
 .login-forgot { text-align: center; font-size: 12px; }
 .login-forgot.admin   { color: var(--gray); }
-.login-forgot.student { color: var(--text-lt); }
+.login-forgot.student     { color: var(--gray); }
+.login-panel-right.student .form-control { background: var(--navy-mid); border-color: var(--navy-lt); color: var(--white); }
+.login-panel-right.student .form-control::placeholder { color: var(--gray); }
 
 /* ── WELCOME BAND (student dashboard) ── */
 .welcome-band {
